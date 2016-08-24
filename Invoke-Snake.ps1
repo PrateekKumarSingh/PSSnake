@@ -28,7 +28,8 @@ Function Invoke-Snake()
             $Region = New-Object System.Drawing.Region($Dot)
             $Graphics.FillRegion([System.Drawing.Brushes]::Crimson,$Region)
 
-		    $PictureBox = New-Object System.Windows.Forms.PictureBox
+		    $Global:PictureBox = New-Object System.Windows.Forms.PictureBox
+
 		    $PictureBox.Image = $Image
 		    $PictureBox.Height =  700
 		    $PictureBox.Width = 600
@@ -39,27 +40,97 @@ Function Invoke-Snake()
             $Form.KeyUp($event)
             $Form.Show()
 
-        $i = 0
-        While($true)
-        {
-            $Image = [System.Drawing.Bitmap]::new(300,400)
-		    $Graphics = [System.Drawing.Graphics]::FromImage($Image)
-            $Pen = New-Object System.Drawing.Pen ([System.Drawing.Brushes]::crimson,5)
-            $Dot = [System.Drawing.Rectangle]::new(30+$i,30,10,10)
-            $Dot.Location
-            $i=$i+2
+        $Global:XCoord = 200
+        $Global:YCoord = 200
+        $Global:i = 0
+        
+        #While($true)
+        #{
+        #    $Image = [System.Drawing.Bitmap]::new(300,400)
+		#    $Graphics = [System.Drawing.Graphics]::FromImage($Image)
+        #    $Pen = New-Object System.Drawing.Pen ([System.Drawing.Brushes]::crimson,5)
+        #        $Dot = [System.Drawing.Rectangle]::new(30+$i,30,10,10)
+        #
+        #    $i=$i-2
+        #    "`$i = $i | X = $($Dot.location.x) | Y = $($Dot.location.Y)"
+        #                #Creating the Rectangles
+        #    $Graphics.DrawRectangle($Pen,$Dot)
+        #    $Region = New-Object System.Drawing.Region($Dot)
+        #    $Graphics.FillRegion([System.Drawing.Brushes]::Crimson,$Region)
+        #
+        #    $PictureBox.Image = $Image
+        #    $PictureBox.Invalidate()
+        #    Start-Sleep -Seconds 1
+        #}
+
+            1..20|%{     
+            Get-NewPicture('down')
+            }        
             
-                        #Creating the Rectangles
-            $Graphics.DrawRectangle($Pen,$Dot)
-            $Region = New-Object System.Drawing.Region($Dot)
-            $Graphics.FillRegion([System.Drawing.Brushes]::Crimson,$Region)
+            1..20|%{     
+            Get-NewPicture('left')
+            }
 
-            $PictureBox.Image = $Image
-            $PictureBox.Invalidate()
-            Start-Sleep -Milliseconds 10
-        }
+            1..20|%{     
+            Get-NewPicture('up')
+            }
 
+            1..20|%{     
+            Get-NewPicture('right')
+            }
+}
+
+Function Get-NewPicture($Direction)
+{
+    $Image = [System.Drawing.Bitmap]::new(300,400)
+    $Graphics = [System.Drawing.Graphics]::FromImage($Image)
+    $Pen = New-Object System.Drawing.Pen ([System.Drawing.Brushes]::crimson,5)
+    
+    If($Direction -eq 'down')
+    {
+        $Delta = 1
+        $Global:i = 0 
+        $Dot = [System.Drawing.Rectangle]::new($Global:XCoord,($Global:YCoord)+$Global:i,10,10) 
+        #$Global:XCoord = $Global:XCoord + $Delta
+        $Global:YCoord = $Global:YCoord + $Delta
+    }
+    ElseIf($Direction -eq 'up')
+    {
+        $Delta = -1
+        $Global:i = 0
+        $Dot = [System.Drawing.Rectangle]::new($Global:XCoord,($Global:YCoord+$Global:i),10,10) 
+        #$Global:XCoord = $Global:XCoord + $Delta
+        $Global:YCoord = $Global:YCoord + $Delta          
+    }
+    ElseIf($Direction -eq 'left')
+    {
+        $Delta = -1
+        $Global:i = 0
+        $Dot = [System.Drawing.Rectangle]::new(($Global:XCoord+$Global:i),$Global:YCoord,10,10) 
+        $Global:XCoord = $Global:XCoord + $Delta
+        #$Global:YCoord = $Global:YCoord + $Delta
+    }
+    ElseIf($Direction -eq 'right')
+    {
+        $Delta = 1
+        $Global:i = 0
+        $Dot = [System.Drawing.Rectangle]::new(($Global:XCoord+$Global:i),$Global:YCoord,10,10)
+        $Global:XCoord = $Global:XCoord + $Delta
+        #$Global:YCoord = $Global:YCoord + $Delta
+    }
+    
+    $Global:i=$Global:i+$Delta
+
+    "Direction = $Direction| `$i = $i | X = $($Dot.location.x + $Delta) | Y = $($Dot.location.Y + $Delta)"
+    
+    #Creating the Rectangles
+    $Graphics.DrawRectangle($Pen,$Dot)
+    $Region = New-Object System.Drawing.Region($Dot)
+    $Graphics.FillRegion([System.Drawing.Brushes]::Crimson,$Region)
+    
+    $PictureBox.Image = $Image
+    $PictureBox.Invalidate()
+    Start-Sleep -Milliseconds 100
 }
 
 Invoke-Snake
-
