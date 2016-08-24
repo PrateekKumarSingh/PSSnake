@@ -18,11 +18,10 @@ Function Invoke-Snake()
 		    $Image = [System.Drawing.Bitmap]::new(300,400)
 		    $Graphics = [System.Drawing.Graphics]::FromImage($Image)
             $Pen = New-Object System.Drawing.Pen ([System.Drawing.Brushes]::crimson,5)
-        $i=0
-        While($true)
-        {
 
-            $Dot = [System.Drawing.Rectangle]::new(30+$i,30,10,10)
+
+
+            $Dot = [System.Drawing.Rectangle]::new(30,30,10,10)
 
             #Creating the Rectangles
             $Graphics.DrawRectangle($Pen,$Dot)
@@ -36,11 +35,31 @@ Function Invoke-Snake()
 		    $PictureBox.Sizemode = 'autosize'
 		    $PictureBox.BackgroundImageLayout = 'stretch'
             $Form.Controls.Add($PictureBox)
-                    $Form.ShowDialog()|Out-Null 
+            $event=[System.Windows.Forms.KeyPressEventHandler]{$_.keychar}
+            $Form.KeyUp($event)
+            $Form.Show()
+
+        $i = 0
+        While($true)
+        {
+            $Image = [System.Drawing.Bitmap]::new(300,400)
+		    $Graphics = [System.Drawing.Graphics]::FromImage($Image)
+            $Pen = New-Object System.Drawing.Pen ([System.Drawing.Brushes]::crimson,5)
+            $Dot = [System.Drawing.Rectangle]::new(30+$i,30,10,10)
+            $Dot.Location
+            $i=$i+2
+            
+                        #Creating the Rectangles
+            $Graphics.DrawRectangle($Pen,$Dot)
+            $Region = New-Object System.Drawing.Region($Dot)
+            $Graphics.FillRegion([System.Drawing.Brushes]::Crimson,$Region)
+
+            $PictureBox.Image = $Image
+            $PictureBox.Invalidate()
+            Start-Sleep -Milliseconds 10
         }
 
 }
 
 Invoke-Snake
-
 
